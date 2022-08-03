@@ -19,6 +19,8 @@ service.interceptors.request.use(async (config) => {
   if (store.state.user.token) {
     if (isTimeOut()) {
       //如果token过期就跳到login页面
+      await store.dispatch('user/logout')
+      router.push('/login')
       return Promise.reject(new Error('登录过期'))
     } else {
       config.headers.Authorization = 'Bearer ' + store.state.user.token
