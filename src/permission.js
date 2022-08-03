@@ -9,6 +9,10 @@ router.beforeEach((to, from, next) => {
   if (token) {
     //1.登录
     // 是否进入登录页
+    if (!store.state.user.userInfo.userId) {
+      //获取用户信息
+      store.dispatch('user/getUserInfo')
+    }
     if (to.path === '/login') {
       //1.1 是 跳转首页
       next('/')

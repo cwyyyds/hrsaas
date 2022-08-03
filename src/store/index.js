@@ -22,6 +22,7 @@ const store = new Vuex.Store({
         return {
           user: {
             token: state.user.token,
+            // userInfo: state.user.userInfo,
           },
         }
       },
