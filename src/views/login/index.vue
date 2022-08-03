@@ -1,237 +1,258 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+  <div class="login-img">
+    <div class="login">
+      <!-- 商标 -->
+      <img src="~@/assets/img/商标.png" alt="" class="brandImg" />
 
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
-      </div>
+      <el-form
+        ref="loginForm"
+        class="demo-ruleForm"
+        :model="loginForm"
+        :rules="loginFormRules"
+      >
+        <!-- 用户名 -->
+        <el-form-item prop="loginName">
+          <el-input
+            type="text"
+            v-model="loginForm.loginName"
+            placeholder="admin"
+          >
+            <template #prepend
+              ><span class="el-icon-mobile-phone"></span
+            ></template>
+          </el-input>
+        </el-form-item>
 
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
+        <!-- 密码 -->
+        <el-form-item class="userPassword" prop="password">
+          <el-input
+            :type="isShow ? 'password' : 'text'"
+            v-model="loginForm.password"
+            placeholder="请输入密码"
+          >
+            <template #prepend
+              ><span class="square-full el-icon-lock"></span
+            ></template>
+            <template #append
+              ><span
+                class="iconfont icon-biyan"
+                v-show="isShow"
+                @click="isShowFn"
+              ></span>
+              <span
+                class="iconfont icon-in_zhengyan"
+                v-show="!isShow"
+                @click="isShowFn"
+              ></span>
+            </template>
+          </el-input>
+        </el-form-item>
 
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
+        <!-- 验证码 -->
+        <el-form-item class="authCode" prop="code">
+          <el-input
+            type="text"
+            v-model="loginForm.code"
+            placeholder="请输入验证码"
+          >
+            <template #prepend
+              ><span class="iconfont icon-yanzhengyanzhengma"></span>
+            </template>
+            <template #append
+              ><img :src="codeImg" alt="" class="codeImg" @click="getCodeImg" />
+            </template>
+          </el-input>
+        </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
-    </el-form>
+        <el-form-item>
+          <el-button type="primary" @click="getToken(loginForm)"
+            >登录</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+import { getCodeImg } from '@/api'
+import { createNamespacedHelpers } from 'vuex'
+const { mapActions: mapCateforyActions } = createNamespacedHelpers('user')
 export default {
   name: 'Login',
+
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        loginName: 'admin',
+        password: 'admin',
+        code: '',
+        clientToken: '1234',
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+      loginFormRules: {
+        loginName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+        ],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        code: [
+          { required: true, message: '请输入4位验证码', trigger: 'blur' },
+          { min: 4, max: 4, message: '请输入4位验证码', trigger: 'blur' },
+        ],
       },
-      loading: false,
-      passwordType: 'password',
-      redirect: undefined
+      //控制密码是否可见
+      isShow: 'true',
+      //验证码地址
+      codeImg: '',
+      //验证码节流
+      flag: true,
+      //随机数
+
+      //用户token
+      userToken: '',
     }
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-      },
-      immediate: true
-    }
+
+  created() {
+    this.getCodeImg()
   },
+
   methods: {
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
-    },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+    ...mapCateforyActions(['getToken']),
+
+    //获取验证码图片
+    async getCodeImg() {
+      try {
+        if (this.flag) {
+          //生成哈希值 Number(24)长度 24
+          this.loginForm.clientToken = Array.from(Array(Number(24) || 24), () =>
+            Math.floor(Math.random() * 36).toString(36),
+          ).join('')
+          this.flag = false
+          const res = await getCodeImg(this.loginForm.clientToken)
+          console.log(res)
+          this.codeImg = window.URL.createObjectURL(res.data)
+          this.flag = true
+          return
         }
-      })
-    }
-  }
+        this.$message('刷新过快')
+        // alert('刷新过快')
+      } catch (e) {
+        console.log(e)
+        this.flag = true
+      }
+    },
+    //控制密码是否可见
+    isShowFn() {
+      this.isShow = !this.isShow
+    },
+  },
 }
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
-
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
-}
-
-/* reset element-ui css */
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      caret-color: $cursor;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
-      }
-    }
-  }
-
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
-}
-</style>
+<style lang="scss"></style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-.login-container {
-  min-height: 100%;
-  width: 100%;
-  background-color: $bg;
-  overflow: hidden;
-
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
+::v-deep.login-img {
+  height: 100vh;
+  width: 100vw;
+  background: url('~@/assets/img/background_img.png') no-repeat;
+  background-size: cover;
+  position: relative;
+  //覆盖高亮
+  .el-input__inner:focus,
+  .el-input__inner:hover {
+    border-color: #dcdfe6;
   }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
-    }
+  //覆盖报错红色
+  .el-form-item.is-error .el-input__inner,
+  .el-form-item.is-error .el-input__inner:focus {
+    border-color: #dcdfe6;
   }
-
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
-  }
-
-  .show-pwd {
+  //商标
+  .brandImg {
     position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
+    width: 96px;
+    height: 96px;
+    top: -12%;
+    left: 41.1%;
   }
+}
+.login {
+  position: absolute;
+  width: 518px;
+  height: 388px;
+  top: 50%;
+  left: 50%;
+  margin-top: -194px;
+  margin-left: -259px;
+  background: #fff;
+  padding: 76px 35px 0;
+  border-radius: 10px;
+}
+::v-deep .el-form-item__content {
+  margin-bottom: 10px;
+}
+//输入框
+::v-deep .el-form-item__content {
+  display: flex;
+}
+::v-deep .el-input__inner {
+  height: 52px;
+  background-color: #fff;
+  border-left: 0;
+}
+//图标
+::v-deep .el-input-group__prepend {
+  background-color: #fff;
+  border-right: 0;
+  padding: 6px 5px 6px 15px;
+  color: #889aa4;
+  width: 30px;
+  font-size: 16px;
+}
+//闭眼
+::v-deep .userPassword {
+  input {
+    border-right: 0;
+  }
+  .el-input-group__append {
+    background-color: #fff;
+    width: 28px;
+    padding: 8px 0 0;
+  }
+  .iconfont {
+    font-size: 22px;
+  }
+}
+//验证码图片
+::v-deep .authCode {
+  .el-input-group__append {
+    width: 134px;
+    background-color: #fff;
+    padding: 0;
+  }
+  .iconfont {
+    font-size: 16px;
+  }
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+
+//按钮
+::v-deep.el-button--primary {
+  color: #fff;
+  background-color: #6679ed;
+  border-color: #6679ed;
+  width: 100%;
+  margin-top: 8px;
+  height: 48px;
 }
 </style>

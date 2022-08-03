@@ -14,6 +14,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import '@/assets/fonts/iconfont.css'
 
 /**
  * If you don't want to use mock-server
@@ -39,5 +40,5 @@ new Vue({
   el: '#app',
   router,
   store,
-  render: (h) => h(App)
+  render: (h) => h(App),
 })
