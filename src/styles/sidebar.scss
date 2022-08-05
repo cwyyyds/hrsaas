@@ -2,6 +2,7 @@
   .main-container {
     min-height: 100%;
     transition: margin-left 0.28s;
+    margin-left: $sideBarWidth;
     position: relative;
   }
 
@@ -12,12 +13,12 @@
     height: 100%;
     position: fixed;
     font-size: 0px;
-    top: 52px;
+    top: 60px;
     bottom: 0;
     left: 0;
     z-index: 1001;
     overflow: hidden;
-    background-color: orange;
+    background: #fff;
 
     // reset element-ui css
     .horizontal-collapse-transition {
@@ -27,6 +28,7 @@
 
     .scrollbar-wrapper {
       overflow-x: hidden !important;
+      background: url('~@/assets/common/leftnavBg.png') no-repeat 0 100%;
     }
 
     .el-scrollbar__bar.is-vertical {
@@ -53,10 +55,11 @@
       overflow: hidden;
     }
 
-    .svg-icon {
+    .svg-icon,
+    .iconfont,
+    .iconfont {
       margin-right: 16px;
     }
-
     .sub-el-icon {
       margin-right: 12px;
       margin-left: -2px;
@@ -66,6 +69,33 @@
       border: none;
       height: 100%;
       width: 100% !important;
+      background-color: transparent;
+      a {
+        li {
+          .svg-icon,
+          .iconfont {
+            color: #000;
+            font-size: 18px;
+            vertical-align: middle;
+            .icon {
+              color: #000;
+            }
+          }
+          span {
+            color: #000;
+          }
+          &:hover {
+            background-color: #fff !important;
+            .svg-icon,
+            .iconfont {
+              color: #43a7fe;
+            }
+            span {
+              color: #43a7fe;
+            }
+          }
+        }
+      }
     }
 
     // menu hover
@@ -87,6 +117,69 @@
 
       &:hover {
         background-color: $subMenuHover !important;
+      }
+    }
+  }
+
+  .hideSidebar {
+    .sidebar-container {
+      width: 54px !important;
+    }
+
+    .main-container {
+      margin-left: 54px;
+    }
+
+    .submenu-title-noDropdown {
+      padding: 0 !important;
+      position: relative;
+
+      .el-tooltip {
+        padding: 0 !important;
+
+        .svg-icon,
+        .iconfont {
+          margin-left: 20px;
+        }
+
+        .sub-el-icon {
+          margin-left: 19px;
+        }
+      }
+    }
+
+    .el-submenu {
+      overflow: hidden;
+
+      & > .el-submenu__title {
+        padding: 0 !important;
+
+        .svg-icon,
+        .iconfont {
+          margin-left: 20px;
+        }
+
+        .sub-el-icon {
+          margin-left: 19px;
+        }
+
+        .el-submenu__icon-arrow {
+          display: none;
+        }
+      }
+    }
+
+    .el-menu--collapse {
+      .el-submenu {
+        & > .el-submenu__title {
+          & > span {
+            height: 0;
+            width: 0;
+            overflow: hidden;
+            visibility: hidden;
+            display: inline-block;
+          }
+        }
       }
     }
   }
@@ -126,7 +219,8 @@
 // when menu collapsed
 .el-menu--vertical {
   & > .el-menu {
-    .svg-icon {
+    .svg-icon,
+    .iconfont {
       margin-right: 16px;
     }
     .sub-el-icon {

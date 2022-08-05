@@ -16,6 +16,7 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import '@/assets/fonts/iconfont.css'
 
+import * as directive from './directive'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -33,6 +34,10 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+
+for (let key in directive) {
+  Vue.directive(key, directive[key])
+}
 
 Vue.config.productionTip = false
 

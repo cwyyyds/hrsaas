@@ -79,7 +79,7 @@ import { getCodeImg } from '@/api'
 import { createNamespacedHelpers } from 'vuex'
 const { mapActions: mapCateforyActions } = createNamespacedHelpers('user')
 export default {
-  name: 'Login',
+  name: 'LoginIndex',
 
   data() {
     return {
@@ -129,7 +129,6 @@ export default {
           ).join('')
           this.flag = false
           const res = await getCodeImg(this.loginForm.clientToken)
-          console.log(res)
           this.codeImg = window.URL.createObjectURL(res.data)
           this.flag = true
           return
@@ -149,31 +148,29 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
-
-<style lang="scss" scoped>
+<style lang="scss">
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+//覆盖高亮
+.el-input__inner:focus,
+.el-input__inner:hover {
+  border-color: #dcdfe6;
+}
+//覆盖报错红色
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-input__inner:focus {
+  border-color: #dcdfe6;
+}
 
-::v-deep.login-img {
+.login-img {
   height: 100vh;
   width: 100vw;
   background: url('~@/assets/img/background_img.png') no-repeat;
   background-size: cover;
   position: relative;
-  //覆盖高亮
-  .el-input__inner:focus,
-  .el-input__inner:hover {
-    border-color: #dcdfe6;
-  }
-  //覆盖报错红色
-  .el-form-item.is-error .el-input__inner,
-  .el-form-item.is-error .el-input__inner:focus {
-    border-color: #dcdfe6;
-  }
   //商标
   .brandImg {
     position: absolute;
@@ -195,20 +192,19 @@ export default {
   padding: 76px 35px 0;
   border-radius: 10px;
 }
-::v-deep .el-form-item__content {
-  margin-bottom: 10px;
-}
+//覆盖高亮
+
 //输入框
-::v-deep .el-form-item__content {
+.el-form-item__content {
   display: flex;
 }
-::v-deep .el-input__inner {
+.el-input__inner {
   height: 52px;
   background-color: #fff;
   border-left: 0;
 }
 //图标
-::v-deep .el-input-group__prepend {
+.el-input-group__prepend {
   background-color: #fff;
   border-right: 0;
   padding: 6px 5px 6px 15px;
@@ -217,7 +213,7 @@ export default {
   font-size: 16px;
 }
 //闭眼
-::v-deep .userPassword {
+.userPassword {
   input {
     border-right: 0;
   }
@@ -231,7 +227,7 @@ export default {
   }
 }
 //验证码图片
-::v-deep .authCode {
+.authCode {
   .el-input-group__append {
     width: 134px;
     background-color: #fff;
@@ -247,7 +243,7 @@ export default {
 }
 
 //按钮
-::v-deep.el-button--primary {
+.el-button--primary {
   color: #fff;
   background-color: #6679ed;
   border-color: #6679ed;

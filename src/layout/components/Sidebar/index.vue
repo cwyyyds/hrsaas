@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'has-logo': showLogo }">
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -43,7 +43,9 @@ export default {
       }
       return path
     },
-
+    showLogo() {
+      return this.$store.state.settings.sidebarLogo
+    },
     variables() {
       return variables
     },

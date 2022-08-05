@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9954418",
+      "name": "点位管理",
+      "font_class": "dianweiguanli",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "12820178",
+      "name": "人员管理",
+      "font_class": "renyuanguanli",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "14463244",
+      "name": "倒三角",
+      "font_class": "daosanjiao",
+      "unicode": "e75b",
+      "unicode_decimal": 59227
+    },
+    {
+      "icon_id": "15232401",
+      "name": "工单管理",
+      "font_class": "gongdanguanli",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "15838485",
+      "name": "home",
+      "font_class": "home",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "16388265",
+      "name": "设备",
+      "font_class": "shebei",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
       "icon_id": "553324",
       "name": "验证 验证码",
       "font_class": "yanzhengyanzhengma",

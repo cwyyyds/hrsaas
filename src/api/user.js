@@ -1,14 +1,11 @@
 import request from '@/utils/request'
 
 /**
- * 登录请求
- * @param {Object} data
- * @returns promise
+ * 用户基本信息
+ * @returns
  */
-export function login(data) {
+export function getUserService() {
   return request({
-    url: '/sys/login',
-    method: 'post',
-    data,
+    url: '/api/user-service/user/',
   })
 }
