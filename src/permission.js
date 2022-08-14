@@ -4,7 +4,7 @@ import store from '@/store'
 //会在所有路由进去之前触发
 
 const whiteList = ['/login', '/404']
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const token = store.state.user.token
   if (token) {
     //1.登录
@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) => {
     //   //获取用户信息
     //   store.dispatch('user/getUserInfo')
     // }
-    store.dispatch('user/getUserInfo')
+    await store.dispatch('user/getUserInfo')
 
     if (to.path === '/login') {
       //1.1 是 跳转首页
