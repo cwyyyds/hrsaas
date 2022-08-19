@@ -35,6 +35,7 @@
                   padding: 10px;
                 "
                 alt=""
+                @click="showErCodeDialog(row.staffPhoto)"
               />
             </template>
           </el-table-column>
@@ -63,8 +64,13 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
-            <template>
-              <el-button type="text" size="small">查看</el-button>
+            <template slot-scope="{ row }">
+              <el-button
+                type="text"
+                size="small"
+                @click="$router.push('/employees/detail/' + row.id)"
+                >查看</el-button
+              >
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
@@ -96,6 +102,12 @@
       :visible.sync="showAddEmployees"
       @add-success="getEmployeesInfoApi"
     ></AddEmployees>
+
+    <el-dialog title="二维码" :visible.sync="ercodeDialog">
+      <el-row type="flex" justify="center">
+        <canvas id="canvas" />
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,9 +116,11 @@ import { getEmployeesInfoApi, delEmployees } from '@/api/employees'
 import employees from '@/constant/employees'
 import AddEmployees from './components/add-employees.vue'
 const { exportExcelMapPath, hireType } = employees
+import QRcode from 'qrcode'
 export default {
   data() {
     return {
+      ercodeDialog: false,
       showAddEmployees: false,
       EmployeesInfoList: [],
       pages: {
@@ -184,6 +198,15 @@ export default {
         filename: 'excel-list', //非必填
         autoWidth: true, //非必填
         bookType: 'xlsx', //非必填
+      })
+    },
+    showErCodeDialog(staffPhoto) {
+      if (!staffPhoto) return this.$message.error('该用户还未设置头像')
+      this.ercodeDialog = true
+
+      this.$nextTick(() => {
+        const canvas = document.getElementById('canvas')
+        QRcode.toCanvas(canvas, staffPhoto)
       })
     },
   },

@@ -19,6 +19,8 @@ import * as directive from './directive'
 import * as filters from './filters'
 
 import components from '@/components'
+import Print from 'vue-print-nb'
+Vue.use(Print)
 
 // 统一注册过滤器
 for (let key in filters) {
