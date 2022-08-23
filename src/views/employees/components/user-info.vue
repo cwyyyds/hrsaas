@@ -1,6 +1,5 @@
 <template>
   <div class="user-info">
-    <!-- 打印i标签 -->
     <i
       @click="$router.push(`/employees/print/${userId}?type=personal`)"
       class="el-icon-printer"
@@ -63,10 +62,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-            <UploadImg
-              ref="headerImg"
-              @onSuccess="headerImgSuccess"
-            ></UploadImg>
+            <upload-img ref="headerImg" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -102,10 +98,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <UploadImg
-            ref="employeesPic"
-            @onSuccess="employeesPicSuccess"
-          ></UploadImg>
+          <upload-img ref="employeesPic" @onSuccess="employeesPicSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -404,9 +397,9 @@
 
 <script>
 import EmployeeEnum from '@/constant/employees'
-import { getUserDetail, saveUserDetailById } from '@/api/user'
+import { getUserDetail, saveUserDetailById } from '@/api/user.js'
 import { getPersonalDetail, updatePersonal } from '@/api/employees.js'
-import jobInfo from '../components/job-info.vue'
+
 export default {
   data() {
     return {
@@ -491,36 +484,33 @@ export default {
     },
     async loadEmployeesInfo() {
       this.formData = await getPersonalDetail(this.userId)
-      console.log(this.formData.staffPhoto)
-      console.log(this.$refs.employeesPic)
       this.$refs.employeesPic.fileList.push({
         url: this.formData.staffPhoto,
       })
     },
     async onSaveUserDetail() {
       if (this.$refs.headerImg.loading) {
-        return this.$message.error('图片上传中')
+        return this.$message.error('头像正在上传中')
       }
       await saveUserDetailById(this.userInfo)
+
       this.$message.success('更新成功')
     },
     async onSaveEmployeesInfo() {
       if (this.$refs.employeesPic.loading) {
-        return this.$message.error('图片上传中')
+        return this.$message.error('头像正在上传中')
       }
       await updatePersonal(this.formData)
       this.$message.success('更新成功')
     },
+    // 监听员工头像上传成功
     headerImgSuccess({ url }) {
       this.userInfo.staffPhoto = url
     },
+    // 监听员工照片上传成功
     employeesPicSuccess({ url }) {
       this.formData.staffPhoto = url
-      this.$message.success('更新成功')
     },
-  },
-  components: {
-    jobInfo,
   },
 }
 </script>

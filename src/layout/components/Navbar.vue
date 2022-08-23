@@ -6,40 +6,32 @@
       @toggleClick="toggleSideBar"
     />
 
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
+      {{ $store.state.user.userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
 
-    <!-- <breadcrumb class="breadcrumb-container" /> -->
-
     <div class="right-menu">
+      <!-- 中英文切换 -->
+      <ToggleLang></ToggleLang>
+
+      <full-screen class="right-menu-item" />
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="userInfo.staffPhoto"
+            :src="$store.state.user.userInfo.staffPhoto + '123'"
             class="user-avatar"
             v-imgError="defaultImg"
           />
-          <span>{{ userInfo.companyName }}</span>
+          <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item> Home </el-dropdown-item>
           </router-link>
-          <a
-            target="_blank"
-            href="https://github.com/PanJiaChen/vue-admin-template/"
-          >
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://panjiachen.github.io/vue-element-admin-site/#/"
-          >
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">Log Out</span>
           </el-dropdown-item>
@@ -50,15 +42,15 @@
 </template>
 
 <script>
-import { mapGetters, createNamespacedHelpers } from 'vuex'
-const { mapState } = createNamespacedHelpers('user')
+import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import defaultImg from '@/assets/common/head.jpg'
+
 export default {
+  // 如果想在data中定义本地图片路径,需要先引入
   data() {
     return {
-      // defaultImg: require('@/assets/common/head.jpg'),
       defaultImg,
     }
   },
@@ -68,7 +60,6 @@ export default {
   },
   computed: {
     ...mapGetters(['sidebar', 'avatar']),
-    ...mapState(['userInfo']),
   },
   methods: {
     toggleSideBar() {
@@ -116,7 +107,7 @@ export default {
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
-    color: #ffffff;
+    color: #fff;
     fill: currentColor;
 
     &:hover {
@@ -160,15 +151,15 @@ export default {
 
       .avatar-wrapper {
         position: relative;
-        // margin-top: 5px;
-        // 开启flex
         display: flex;
         align-items: center;
         color: #fff;
+        cursor: pointer;
 
         span {
           margin: 0 3px;
         }
+
         .user-avatar {
           cursor: pointer;
           width: 40px;
@@ -180,11 +171,17 @@ export default {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          // top: 25px;
           font-size: 12px;
         }
       }
     }
   }
+}
+.right-menu-item {
+  vertical-align: middle;
+}
+.right-menu {
+  display: flex;
+  align-items: center;
 }
 </style>

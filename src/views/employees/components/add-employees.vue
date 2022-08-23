@@ -1,6 +1,6 @@
 <template>
-  <el-dialog title="新增员工" :visible="visible" width="50%" @close="onClose">
-    <el-form :model="formData" :rules="rules" label-width="120px" ref="form">
+  <el-dialog @close="onClose" title="新增员工" :visible="visible" width="50%">
+    <el-form ref="form" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="姓名" prop="username">
         <el-input
           v-model="formData.username"
@@ -45,18 +45,23 @@
         />
       </el-form-item>
       <el-form-item label="部门" prop="departmentName">
+        <!-- <el-input
+          v-model="formData.departmentName"
+          style="width: 50%"
+          placeholder="请选择部门"
+        /> -->
         <el-select
           @focus="getDepts"
           v-model="formData.departmentName"
           placeholder="请选择部门"
           ref="deptSelect"
         >
-          <el-option value="" v-loading="isTreeLoading" class="treeOption">
+          <el-option class="treeOption" v-loading="isTreeLoading" value="">
             <el-tree
+              @node-click="treeNodeClick"
               :data="depts"
               :props="treeProps"
-              @node-click="treeNodeClick"
-            />
+            ></el-tree>
           </el-option>
         </el-select>
       </el-form-item>
@@ -70,31 +75,20 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="onClose">取 消</el-button>
-      <el-button type="primary" @click="onSave">确 定</el-button>
+      <el-button @click="onSave" type="primary">确 定</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
 import employees from '@/constant/employees'
-import { getDeptsApi } from '@/api/deportments'
-import { addEmployee } from '@/api/employees'
+import { getDeptsApi } from '@/api/departments'
 import { transListToTree } from '@/utils'
+import { addEmployee } from '@/api/employees'
+const { hireType } = employees
 export default {
-  props: {
-    visible: {
-      type: Boolean,
-      required: false,
-    },
-  },
   data() {
     return {
-      isTreeLoading: true,
-      treeProps: {
-        label: 'name',
-      },
-      depts: [],
-      hireType: employees.hireType,
       formData: {
         username: '',
         mobile: '',
@@ -128,38 +122,50 @@ export default {
           { required: true, message: '工号不能为空', trigger: 'blur' },
         ],
         departmentName: [
-          { required: true, message: '部门不能为空', trigger: 'change' },
+          { required: true, message: '部门不能为空', trigger: 'blur' },
         ],
         timeOfEntry: [
           { required: true, message: '入职时间', trigger: 'change' },
         ],
       },
+      hireType,
+      depts: [],
+      treeProps: {
+        label: 'name',
+      },
+      isTreeLoading: false,
     }
+  },
+
+  props: {
+    visible: {
+      type: Boolean,
+      required: true,
+    },
   },
 
   created() {},
 
   methods: {
+    onClose() {
+      this.$emit('update:visible', false)
+      this.$refs.form.resetFields()
+    },
     async getDepts() {
       this.isTreeLoading = true
       const { depts } = await getDeptsApi()
-      // depts是数组 但不是树形
-      console.log(depts)
       transListToTree(depts, '')
       this.depts = depts
       this.isTreeLoading = false
     },
     treeNodeClick(row) {
+      // console.log(row)
       this.formData.departmentName = row.name
       this.$refs.deptSelect.blur()
     },
-    onClose() {
-      this.$emit('update:visible', false)
-    },
     onSave() {
-      this.$refs.form.validate(async (vaild) => {
-        if (!vaild) return
-        console.log('发送请求')
+      this.$refs.form.validate(async (valid) => {
+        if (!valid) return
         await addEmployee(this.formData)
         this.$message.success('添加成功')
         this.onClose()
@@ -172,11 +178,11 @@ export default {
 
 <style scoped lang="scss">
 .el-select-dropdown__item.hover,
-.el-select-dropdown__item:hover {
-  background-color: unset;
-
+.el-select-dropdown__item:hover .el-select-dropdown__item {
+  background-color: #fff;
   overflow: unset;
 }
+
 .treeOption {
   height: 100px;
 }

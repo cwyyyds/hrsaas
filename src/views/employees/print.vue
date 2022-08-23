@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container" id="myPrint">
-    <!-- v-print的值是一个字符串（选择器），对应的就会将该选择器中的内容进行打印 -->
+    <!-- v-print的值应该是一个字符串(选择器), 对应的就会将该选择器中的内容进行打印 -->
     <el-button v-print="'#myPrint'">打印</el-button>
     <div class="app-container">
       <el-card>
@@ -11,6 +11,7 @@
           </el-breadcrumb-item>
           <el-breadcrumb-item>打印</el-breadcrumb-item>
         </el-breadcrumb>
+        <!-- 用户-详情 -->
         <div v-if="type === 'personal'">
           <h2 class="centInfo">员工信息表</h2>
           <table cellspacing="0" width="100%" class="tableList">
@@ -38,7 +39,6 @@
             <tr>
               <th>出生日期</th>
               <td colspan="6">{{ formData.dateOfBirth | formatTime }}</td>
-              <!-- <td colspan="6">{{ formData.dateOfBirth | formatDate }}</td> -->
             </tr>
             <tr>
               <th>最高学历</th>
@@ -225,6 +225,7 @@
           </table>
           <div class="foot">签字：___________日期:___________</div>
         </div>
+        <!-- 岗位-详情 -->
         <div v-else>
           <h2 class="centInfo">岗位信息表</h2>
           <table cellspacing="0" width="100%" class="tableList">

@@ -48,6 +48,7 @@ export default {
   & .sidebar-logo-link {
     height: 100%;
     width: 100%;
+
     // 大图样式
     .sidebar-logo {
       width: 140px;

@@ -8,17 +8,22 @@ import router from '@/router'
 function isTimeOut() {
   const currentTime = Date.now()
   const tokenTime = getTokenTime()
-  const timeout = 12 * 60 * 60 * 1000
+  const timeout = 2 * 60 * 60 * 1000
   return currentTime - tokenTime > timeout
 }
+
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
+  // 3套
+  // 开发期间
+  // 测试的
+  // 线上的
   timeout: 5000,
 }) // 创建一个axios的实例
 service.interceptors.request.use(async (config) => {
+  // 当前请求的配置
   if (store.state.user.token) {
     if (isTimeOut()) {
-      //如果token过期就跳到login页面
       await store.dispatch('user/logout')
       router.push('/login')
       return Promise.reject(new Error('登录过期'))
@@ -30,6 +35,7 @@ service.interceptors.request.use(async (config) => {
 }) // 请求拦截器
 service.interceptors.response.use(
   (res) => {
+    // 请求成功的函数
     const { success, data, message } = res.data
     if (success) {
       return data
@@ -38,7 +44,8 @@ service.interceptors.response.use(
     return Promise.reject(new Error(message))
   },
   async function (error) {
-    //es11 ?.
+    // 对响应错误做点什么
+    // es11
     if (error?.response?.status === 401) {
       Message.error('登录过期')
       await store.dispatch('user/logout')
@@ -48,6 +55,6 @@ service.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  },
+  }
 ) // 响应拦截器
 export default service // 导出axios实例
